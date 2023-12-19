@@ -2,7 +2,20 @@ import { Schema, model } from 'mongoose';
 import { Guardian, Student, Username, localGuardian } from './student.interface';
 
 const usernameSchema = new Schema<Username>({
-  firstName: { type: String, required: [true, "First Name is required"] },
+  firstName: {
+    type: String,
+    required: [true, "First Name is required"],
+    trim: true,
+    maxlength: [20, "First Name can not be more than 20 characters"],
+    validate: {
+      validator: function (value: string) {
+        const firstNameStr = value.charAt(0).toUpperCase + value.slice(1);
+        return firstNameStr === value;
+      },
+      message: "{VALUE} is not in a capitalized format"
+    },
+    
+  },
   middleName: { type: String },
   lastName: { type: String, required: [true, "Last Name is required"] },
 });
