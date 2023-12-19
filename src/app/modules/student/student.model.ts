@@ -1,13 +1,13 @@
 import { Schema, model } from 'mongoose';
-import { Student } from './student.interface';
+import { Guardian, Student, Username, localGuardian } from './student.interface';
 
-const usernameSchema = new Schema({
+const usernameSchema = new Schema<Username>({
   firstName: { type: String, required: [true, "First Name is required"] },
   middleName: { type: String },
   lastName: { type: String, required: [true, "Last Name is required"] },
 });
 
-const guardianSchema = new Schema({
+const guardianSchema = new Schema<Guardian>({
   fatherName: { type: String, required: [true, "Father's Name is required"] },
   fatherOccupation: { type: String, required: [true, "Father's Occupation is required"] },
   fatherContactNo: { type: String, required: [true, "Father's Contact Number is required"] },
@@ -16,7 +16,7 @@ const guardianSchema = new Schema({
   motherContactNo: { type: String, required: [true, "Mother's Contact Number is required"] },
 });
 
-const localGuardianSchema = new Schema({
+const localGuardianSchema = new Schema<localGuardian>({
   name: { type: String, required: [true, "Local Guardian's Name is required"] },
   occupation: { type: String, required: [true, "Local Guardian's Occupation is required"] },
   contactNo: { type: String, required: [true, "Local Guardian's Contact Number is required"] },
