@@ -100,9 +100,12 @@ const studentSchema = new Schema<TStudent, StudentModel>({
     enum: ['active', 'blocked'],
     default: 'active',
   },
+  isDeleted: { type: Boolean, default: false },
 });
 
 //Middlewares
+
+//works for create() and save()
 studentSchema.pre('save', async function (next) {
   // eslint-disable-next-line @typescript-eslint/no-this-alias
   const user = this;
@@ -113,6 +116,26 @@ studentSchema.pre('save', async function (next) {
   next();
 })
 
+studentSchema.post('save', function (doc, next) {
+  doc.password = '';
+  next();
+})
+
+//Query middleware
+studentSchema.pre('find', function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+
+studentSchema.pre('findOne', function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+
+studentSchema.pre('aggregate', function (next) {
+  this.pipeline().unshift({$match: {isDeleted: {$ne: true}}});
+  next();
+});
 
 //for custom instance methods
 // studentSchema.methods.isUserExists = async function (id: string) {
