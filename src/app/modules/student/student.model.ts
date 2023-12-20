@@ -1,8 +1,8 @@
 import { Schema, model } from 'mongoose';
-import { Guardian, Student, Username, localGuardian } from './student.interface';
+import { StudentMethods, StudentModel, TGuardian, TStudent, TUsername, TlocalGuardian } from './student.interface';
 import validator from 'validator';
 
-const usernameSchema = new Schema<Username>({
+const usernameSchema = new Schema<TUsername>({
   firstName: {
     type: String,
     required: [true, "First Name is required"],
@@ -28,7 +28,7 @@ const usernameSchema = new Schema<Username>({
   },
 });
 
-const guardianSchema = new Schema<Guardian>({
+const guardianSchema = new Schema<TGuardian>({
   fatherName: { type: String, required: [true, "Father's Name is required"] },
   fatherOccupation: { type: String, required: [true, "Father's Occupation is required"] },
   fatherContactNo: { type: String, required: [true, "Father's Contact Number is required"] },
@@ -37,14 +37,14 @@ const guardianSchema = new Schema<Guardian>({
   motherContactNo: { type: String, required: [true, "Mother's Contact Number is required"] },
 });
 
-const localGuardianSchema = new Schema<localGuardian>({
+const localGuardianSchema = new Schema<TlocalGuardian>({
   name: { type: String, required: [true, "Local Guardian's Name is required"] },
   occupation: { type: String, required: [true, "Local Guardian's Occupation is required"] },
   contactNo: { type: String, required: [true, "Local Guardian's Contact Number is required"] },
   address: { type: String, required: [true, "Local Guardian's Address is required"] },
 });
 
-const studentSchema = new Schema<Student>({
+const studentSchema = new Schema<TStudent, StudentModel, StudentMethods>({
   id: { type: String, required: [true, "Student ID is required"], unique: true },
   name: {
     type: usernameSchema,
@@ -59,9 +59,9 @@ const studentSchema = new Schema<Student>({
     required: [true, "Gender is required"],
   },
   dateOfBirth: { type: String },
-  email: { 
-    type: String, 
-    required: [true, "Email is required"], 
+  email: {
+    type: String,
+    required: [true, "Email is required"],
     unique: true,
     validate: {
       validator: (value: string) => validator.isEmail(value),
@@ -95,4 +95,11 @@ const studentSchema = new Schema<Student>({
   },
 });
 
-export const StudentModel = model<Student>('Student', studentSchema);
+studentSchema.methods.isUserExists = async function (id: string) {
+  const existingUser = await Student.findOne({ id });
+  return existingUser
+}
+
+export const Student = model<TStudent, StudentModel>('Student', studentSchema);
+
+
