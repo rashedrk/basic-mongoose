@@ -101,7 +101,16 @@ const studentSchema = new Schema<TStudent, StudentModel>({
     default: 'active',
   },
   isDeleted: { type: Boolean, default: false },
+}, {
+  toJSON: {
+    virtuals: true
+  }
 });
+
+//virtual
+studentSchema.virtual('fullName').get(function () {
+  return `${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`
+})
 
 //Middlewares
 
@@ -133,7 +142,7 @@ studentSchema.pre('findOne', function (next) {
 });
 
 studentSchema.pre('aggregate', function (next) {
-  this.pipeline().unshift({$match: {isDeleted: {$ne: true}}});
+  this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
   next();
 });
 
