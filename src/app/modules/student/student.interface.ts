@@ -39,9 +39,14 @@ export type TStudent = {
   isActive: 'active' | 'blocked';
 };
 
+//for custom instance methods
+// export type StudentMethods = {
+//   isUserExists(id: string): Promise<TStudent | null>
+// }
 
-export type StudentMethods = {
+// for custom static methods 
+export interface StudentModel extends Model<TStudent> {
   isUserExists(id: string): Promise<TStudent | null>
 }
 
-export type StudentModel = Model<TStudent, Record<string, never>, StudentMethods>
+// export type StudentModel = Model<TStudent, Record<string, never>, StudentMethods>

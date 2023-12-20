@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { StudentMethods, StudentModel, TGuardian, TStudent, TUsername, TlocalGuardian } from './student.interface';
+import { StudentModel, TGuardian, TStudent, TUsername, TlocalGuardian } from './student.interface';
 import validator from 'validator';
 
 const usernameSchema = new Schema<TUsername>({
@@ -44,7 +44,7 @@ const localGuardianSchema = new Schema<TlocalGuardian>({
   address: { type: String, required: [true, "Local Guardian's Address is required"] },
 });
 
-const studentSchema = new Schema<TStudent, StudentModel, StudentMethods>({
+const studentSchema = new Schema<TStudent, StudentModel>({
   id: { type: String, required: [true, "Student ID is required"], unique: true },
   name: {
     type: usernameSchema,
@@ -95,7 +95,14 @@ const studentSchema = new Schema<TStudent, StudentModel, StudentMethods>({
   },
 });
 
-studentSchema.methods.isUserExists = async function (id: string) {
+//for custom instance methods
+// studentSchema.methods.isUserExists = async function (id: string) {
+//   const existingUser = await Student.findOne({ id });
+//   return existingUser
+// }
+
+// for custom static methods 
+studentSchema.statics.isUserExists = async function (id: string) {
   const existingUser = await Student.findOne({ id });
   return existingUser
 }
