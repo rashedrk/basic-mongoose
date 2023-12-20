@@ -1,6 +1,8 @@
 import { Schema, model } from 'mongoose';
 import { StudentModel, TGuardian, TStudent, TUsername, TlocalGuardian } from './student.interface';
 import validator from 'validator';
+import bcrypt from 'bcrypt';
+import config from '../../config/config';
 
 const usernameSchema = new Schema<TUsername>({
   firstName: {
@@ -11,7 +13,7 @@ const usernameSchema = new Schema<TUsername>({
     validate: {
       validator: function (value: string) {
         const firstNameStr = value.charAt(0).toUpperCase + value.slice(1);
-        return firstNameStr === value;
+        return firstNameStr !== value;
       },
       message: "{VALUE} is not in a capitalized format"
     },
@@ -49,6 +51,11 @@ const studentSchema = new Schema<TStudent, StudentModel>({
   name: {
     type: usernameSchema,
     required: [true, "Student's Name is required"],
+  },
+  password: {
+    type: String,
+    required: [true, "Student's Password is required"],
+    maxlength: [20, "Student's Password cannot exceed 20 characters"]
   },
   gender: {
     type: String,
@@ -95,6 +102,18 @@ const studentSchema = new Schema<TStudent, StudentModel>({
   },
 });
 
+//Middlewares
+studentSchema.pre('save', async function (next) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
+  const user = this;
+  user.password = await bcrypt.hash(
+    user.password,
+    Number(config.bcyrpt_salt_rounds));
+
+  next();
+})
+
+
 //for custom instance methods
 // studentSchema.methods.isUserExists = async function (id: string) {
 //   const existingUser = await Student.findOne({ id });
@@ -106,6 +125,7 @@ studentSchema.statics.isUserExists = async function (id: string) {
   const existingUser = await Student.findOne({ id });
   return existingUser
 }
+
 
 export const Student = model<TStudent, StudentModel>('Student', studentSchema);
 

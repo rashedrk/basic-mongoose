@@ -1,13 +1,7 @@
 import { z } from 'zod';
 
 const userNameSchema = z.object({
-    firstName: z
-        .string()
-        .min(1)
-        .max(20)
-        .refine((value: string) => /^[A-Z]/.test(value), {
-            message: 'First Name must start with a capital letter',
-        }),
+    firstName: z.string(),
     middleName: z.string(),
     lastName: z.string(),
 });
@@ -30,6 +24,7 @@ const localGuardianSchema = z.object({
 
 export const studentValidationSchema = z.object({
     id: z.string(),
+    password: z.string().max(20),
     name: userNameSchema,
     gender: z.enum(['male', 'female']),
     dateOfBirth: z.string(),
